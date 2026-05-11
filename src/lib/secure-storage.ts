@@ -101,7 +101,12 @@ export async function setupPin(pin: string): Promise<void> {
 export async function unlockWithPin(pin: string): Promise<boolean> {
   const raw = window.localStorage.getItem(PIN_META_KEY);
   if (!raw) return false;
-  const meta = JSON.parse(raw) as PinMeta;
+  let meta: PinMeta;
+  try {
+    meta = JSON.parse(raw) as PinMeta;
+  } catch {
+    return false;
+  }
   const salt = b64decode(meta.saltB64);
   const expected = b64decode(meta.hashB64);
   const got = await pbkdf2(pin, salt, meta.iterations, 256);

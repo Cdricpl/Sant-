@@ -1,5 +1,5 @@
 // Stable color palette per person. Returns Tailwind-friendly classes.
-export type PersonPalette = {
+type PersonPalette = {
   badge: string;        // bg + text
   border: string;       // border-l color
   dot: string;          // bg dot

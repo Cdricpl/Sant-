@@ -175,7 +175,7 @@ export function PilulierTab() {
 
   async function enableReminders() {
     if (perm !== "granted") await request();
-    setRemindersOn(true);
+    if (Notification.permission === "granted") setRemindersOn(true);
   }
 
   function testNotification() {

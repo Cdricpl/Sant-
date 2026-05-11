@@ -1,4 +1,4 @@
-export type VaccineCatalogEntry = {
+type VaccineCatalogEntry = {
   key: string;
   name: string;
   description: string;
@@ -7,7 +7,7 @@ export type VaccineCatalogEntry = {
 };
 
 export const VACCINES_CATALOG: VaccineCatalogEntry[] = [
-  { key: "dtp",      name: "DTPolio (Diphtérie, Tétanos, Polio)", description: "Rappel tous les 10 ans (adulte)", rappelMonths: 120 },
+  { key: "dtp",      name: "DTPolio (Diphérie, Tétanos, Polio)", description: "Rappel tous les 10 ans (adulte)", rappelMonths: 120 },
   { key: "ror",      name: "ROR (Rougeole, Oreillons, Rubéole)",  description: "2 doses recommandées" },
   { key: "hepb",     name: "Hépatite B",                          description: "Schéma 0-1-6 mois" },
   { key: "hepa",     name: "Hépatite A",                          description: "Voyage / risque accru" },

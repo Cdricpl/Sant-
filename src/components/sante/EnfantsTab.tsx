@@ -12,6 +12,7 @@ import { uid } from "@/lib/utils";
 function ageOf(birth: string) {
   if (!birth) return "";
   const b = new Date(birth);
+  if (isNaN(b.getTime())) return "";
   const now = new Date();
   if (b > now) return "date invalide";
   let years = now.getFullYear() - b.getFullYear();

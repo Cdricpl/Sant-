@@ -6,5 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const uid = () => crypto.randomUUID();
-export const todayKey = () => new Date().toISOString().slice(0, 10);
-export const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+export const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+export const dayKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
