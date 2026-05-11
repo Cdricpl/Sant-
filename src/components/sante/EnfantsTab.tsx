@@ -129,14 +129,22 @@ export function EnfantsTab() {
             <Card key={c.id} className="p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                    c.sex === "M"
+                      ? "bg-sky-100 text-sky-700"
+                      : c.sex === "F"
+                        ? "bg-pink-100 text-pink-600"
+                        : "bg-accent-soft text-accent"
+                  }`}>
                     <Baby className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="font-semibold">
                       {c.name}
                       {c.sex && (
-                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                        <span className={`ml-2 text-xs font-medium ${
+                          c.sex === "M" ? "text-sky-600" : "text-pink-500"
+                        }`}>
                           {c.sex === "M" ? "Garçon" : "Fille"}
                         </span>
                       )}

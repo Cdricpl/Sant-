@@ -12,6 +12,7 @@ import {
   useMedicationReminders,
   useNotificationPermission,
 } from "@/hooks/use-medication-reminders";
+import { registerPeriodicSync, unregisterPeriodicSync } from "@/lib/reminder-db";
 import { uid, todayKey, dayKey } from "@/lib/utils";
 
 const TIMES: MedFreq[] = ["matin", "midi", "soir"];
@@ -175,7 +176,10 @@ export function PilulierTab() {
 
   async function enableReminders() {
     if (perm !== "granted") await request();
-    if (Notification.permission === "granted") setRemindersOn(true);
+    if (Notification.permission === "granted") {
+      setRemindersOn(true);
+      registerPeriodicSync().catch(() => {});
+    }
   }
 
   function testNotification() {
@@ -240,7 +244,7 @@ export function PilulierTab() {
               {perm === "unsupported"
                 ? "Notifications non supportées sur ce navigateur."
                 : remindersOn && perm === "granted"
-                  ? "Rappels actifs. Vous recevrez une notification aux heures configurées."
+                  ? "Rappels actifs — fonctionne aussi quand l'app est fermée (PWA installée)."
                   : "Activez pour recevoir une notification matin / midi / soir."}
             </p>
           </div>
@@ -253,7 +257,7 @@ export function PilulierTab() {
                 <Button variant="ghost" size="sm" onClick={testNotification}>
                   Tester
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setRemindersOn(false)}>
+                <Button variant="outline" size="sm" onClick={() => { setRemindersOn(false); unregisterPeriodicSync().catch(() => {}); }}>
                   Désactiver
                 </Button>
               </>

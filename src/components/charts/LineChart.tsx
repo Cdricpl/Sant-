@@ -52,10 +52,10 @@ export function LineChart({
       .join(" ");
 
     const yT = [minY, (minY + maxY) / 2, maxY].map((v) => ({ v, y: sy(v) }));
-    const xT = [points[0], points[points.length - 1]].map((p) => ({
-      label: p.label ?? "",
-      x: sx(p.x),
-    }));
+    const xT =
+      points.length <= 1
+        ? points.map((p) => ({ label: p.label ?? "", x: sx(p.x) }))
+        : [points[0], points[points.length - 1]].map((p) => ({ label: p.label ?? "", x: sx(p.x) }));
 
     return {
       path: d,

@@ -68,7 +68,7 @@ function Index() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-stretch justify-between overflow-x-auto px-1">
+        <div className="mx-auto flex max-w-3xl items-stretch justify-between overflow-hidden px-1">
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
@@ -76,13 +76,15 @@ function Index() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`flex flex-1 min-w-[52px] flex-col items-center gap-0.5 px-1 py-2 text-[10px] font-medium transition ${
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                className={`flex flex-col items-center gap-0.5 py-2 transition ${
+                  active
+                    ? "flex-[2] px-2 text-primary"
+                    : "flex-1 px-1 text-muted-foreground hover:text-foreground"
                 }`}
                 aria-current={active ? "page" : undefined}
               >
                 <Icon className={`h-5 w-5 ${active ? "scale-110" : ""} transition`} />
-                {t.label}
+                {active && <span className="text-[10px] font-medium">{t.label}</span>}
               </button>
             );
           })}
