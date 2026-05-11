@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { MedFreq, MedTimes, Medication, MedLog } from "@/lib/types";
+import { saveReminderConfig } from "@/lib/reminder-db";
 
 export const DEFAULT_MED_TIMES: MedTimes = {
   matin: "08:00",
@@ -30,6 +31,11 @@ export function useMedicationReminders(
   enabled: boolean,
 ) {
   const fired = useRef<Set<string>>(new Set());
+
+  // Sync config to IndexedDB so the service worker can read it for background notifications
+  useEffect(() => {
+    saveReminderConfig(enabled, times, meds, log).catch(() => {});
+  }, [enabled, times, meds, log]);
 
   useEffect(() => {
     if (!enabled || typeof window === "undefined" || !("Notification" in window)) return;
