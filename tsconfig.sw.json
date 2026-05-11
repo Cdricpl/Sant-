@@ -1,5 +1,5 @@
 {
-  "include": ["src/service-worker.ts"],
+  "include": ["src/sw.ts"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
