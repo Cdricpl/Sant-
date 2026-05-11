@@ -28,7 +28,7 @@ function ageOf(birth: string) {
 export function EnfantsTab() {
   const [children, setChildren] = useLocalStorage<Child[]>("sante:children", []);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", birthDate: "", notes: "" });
+  const [form, setForm] = useState<{ name: string; birthDate: string; sex?: "M" | "F"; notes: string }>({ name: "", birthDate: "", notes: "" });
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,6 +78,25 @@ export function EnfantsTab() {
                   onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
                 />
               </div>
+              <div>
+                <Label>Sexe</Label>
+                <div className="mt-1 flex gap-2">
+                  {(["M", "F"] as const).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setForm({ ...form, sex: form.sex === s ? undefined : s })}
+                      className={`rounded-full border px-4 py-1.5 text-xs font-medium transition ${
+                        form.sex === s
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border bg-background hover:bg-secondary"
+                      }`}
+                    >
+                      {s === "M" ? "Garçon" : "Fille"}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="c-notes">Notes (allergies, infos…)</Label>
                 <Textarea
@@ -113,7 +132,14 @@ export function EnfantsTab() {
                     <Baby className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="font-semibold">{c.name}</p>
+                    <p className="font-semibold">
+                      {c.name}
+                      {c.sex && (
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                          {c.sex === "M" ? "Garçon" : "Fille"}
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {c.birthDate
                         ? `${new Date(c.birthDate).toLocaleDateString("fr-FR")} • ${ageOf(c.birthDate)}`

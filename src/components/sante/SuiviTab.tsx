@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { Child, WeightEntry } from "@/lib/types";
+import type { Child, UserProfile, WeightEntry } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -180,6 +180,7 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
 
 export function SuiviTab() {
   const [children] = useLocalStorage<Child[]>("sante:children", []);
+  const [profile, setProfile] = useLocalStorage<UserProfile>("ui:profile", {});
   const [selected, setSelected] = useState<string>(() => {
     return window.localStorage.getItem("ui:suivi:selected") ?? "moi";
   });
@@ -216,6 +217,32 @@ export function SuiviTab() {
               </button>
             );
           })}
+        </div>
+      )}
+      {current.id === "moi" && (
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">Sexe</span>
+          {(["M", "F"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setProfile({ ...profile, sex: s })}
+              className={`rounded-full border px-4 py-1 text-xs font-medium transition ${
+                profile.sex === s
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border bg-background hover:bg-secondary"
+              }`}
+            >
+              {s === "M" ? "Homme" : "Femme"}
+            </button>
+          ))}
+          {profile.sex && (
+            <button
+              onClick={() => setProfile({ ...profile, sex: undefined })}
+              className="text-xs text-muted-foreground underline"
+            >
+              Effacer
+            </button>
+          )}
         </div>
       )}
       <PersonSuivi key={current.id} personId={current.id} isAdult={current.isAdult} />

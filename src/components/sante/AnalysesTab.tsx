@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { Biomarker } from "@/lib/types";
+import type { Biomarker, UserProfile } from "@/lib/types";
 import { BIOMARKERS_CATALOG, flagForValue } from "@/lib/biomarkers-catalog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Trash2, Plus, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { uid } from "@/lib/utils";
 
 export function AnalysesTab() {
+  const [profile] = useLocalStorage<UserProfile>("ui:profile", {});
   const [items, setItems] = useLocalStorage<Biomarker[]>("sante:bio", []);
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -28,7 +29,7 @@ export function AnalysesTab() {
       const cat = BIOMARKERS_CATALOG.find((c) => c.key === key);
       if (!cat) return;
       const num = parseFloat(v.replace(",", "."));
-      const flag = !isNaN(num) ? flagForValue(cat, num) : undefined;
+      const flag = !isNaN(num) ? flagForValue(cat, num, profile.sex) : undefined;
       newOnes.push({
         id: uid(),
         category: cat.category,

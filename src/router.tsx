@@ -56,7 +56,7 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
 
 export const getRouter = () => {
   // import.meta.env.BASE_URL = "/" in dev, "/Sant-/" in production (GitHub Pages)
-  const basepath = import.meta.env.BASE_URL.replace(/\/$/,  "");
+  const basepath = import.meta.env.BASE_URL.replace(/\/$/, "");
   const router = createRouter({
     routeTree,
     basepath,
