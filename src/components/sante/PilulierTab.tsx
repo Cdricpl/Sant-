@@ -163,7 +163,7 @@ export function PilulierTab() {
             if (log[`${k}|${m.id}|${t}`]) takenToday++;
           }),
         );
-        if (dueToday === 0) break;
+        if (dueToday === 0) continue;
         if (takenToday === dueToday) streak++;
         else break;
       }
@@ -182,7 +182,7 @@ export function PilulierTab() {
     if (perm !== "granted") return;
     new Notification("Santé+ — Test", {
       body: "Les rappels de médicaments sont bien actifs ✓",
-      icon: "/icon-192.png",
+      icon: `${import.meta.env.BASE_URL}icon-192.png`,
     });
   }
 

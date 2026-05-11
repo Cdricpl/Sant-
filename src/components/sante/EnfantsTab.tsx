@@ -34,7 +34,7 @@ export function EnfantsTab() {
     e.preventDefault();
     if (!form.name.trim()) return;
     setChildren([...children, { id: uid(), ...form, name: form.name.trim() }]);
-    setForm({ name: "", birthDate: "", notes: "" });
+    setForm({ name: "", birthDate: "", sex: undefined, notes: "" });
     setOpen(false);
   }
 

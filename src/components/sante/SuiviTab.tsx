@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { LineChart } from "@/components/charts/LineChart";
 import { Trash2 } from "lucide-react";
-import { uid } from "@/lib/utils";
+import { uid, todayKey } from "@/lib/utils";
 
 function bmi(w: number, h: number) {
   const m = h / 100;
@@ -49,7 +49,10 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const lastHeight = entries[0]?.height ?? "";
+  const lastHeight = useMemo(
+    () => [...entries].sort((a, b) => b.date.localeCompare(a.date))[0]?.height ?? "",
+    [entries],
+  );
 
   const sorted = useMemo(
     () => [...entries].sort((a, b) => b.date.localeCompare(a.date)),
@@ -67,7 +70,7 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
     const h = parseFloat(height || String(lastHeight));
     if (!w || !h) return;
     setEntries([
-      { id: uid(), date: new Date().toISOString(), weight: w, height: h },
+      { id: uid(), date: todayKey(), weight: w, height: h },
       ...entries,
     ]);
     setWeight("");
