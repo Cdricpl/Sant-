@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { Child, Vaccine } from "@/lib/types";
-import { VACCINES_CATALOG } from "@/lib/vaccines-catalog";
+import { VACCINES_CATALOG, VACCINES_BY_CATEGORY, CATEGORY_LABELS } from "@/lib/vaccines-catalog";
 import { colorForPerson } from "@/lib/person-colors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,12 +86,12 @@ export function VaccinsTab() {
     return g;
   }, [items]);
 
-  const personOrder = useMemo(
-    () => whoOptions.filter((p) => byPerson[p]),
-    [whoOptions, byPerson],
-  );
+  // "Moi" en premier, puis les enfants triés alphabétiquement
+  const personOrder = useMemo(() => {
+    const all = whoOptions.filter((p) => byPerson[p]);
+    return ["Moi", ...all.filter((p) => p !== "Moi").sort()];
+  }, [whoOptions, byPerson]);
 
-  // Upcoming reminders (within 60 days)
   const upcoming = useMemo(
     () =>
       items
@@ -158,8 +158,12 @@ export function VaccinsTab() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3"
                 >
                   <option value="">— Personnalisé —</option>
-                  {VACCINES_CATALOG.map((v) => (
-                    <option key={v.key} value={v.key}>{v.name}</option>
+                  {(Object.keys(CATEGORY_LABELS) as (keyof typeof CATEGORY_LABELS)[]).map((cat) => (
+                    <optgroup key={cat} label={CATEGORY_LABELS[cat]}>
+                      {VACCINES_BY_CATEGORY[cat].map((v) => (
+                        <option key={v.key} value={v.key}>{v.name}</option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
@@ -223,6 +227,7 @@ export function VaccinsTab() {
         </Card>
       ) : (
         personOrder.map((person) => {
+          if (!byPerson[person]) return null;
           const palette = colorForPerson(person, whoOptions);
           return (
             <div key={person} className="space-y-3">
