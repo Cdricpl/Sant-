@@ -32,8 +32,14 @@ export type BiomarkerCatalogEntry = {
   category: string;
   refMin?: number;
   refMax?: number;
+  refMinM?: number;
+  refMaxM?: number;
+  refMinF?: number;
+  refMaxF?: number;
   refRange: string;
 };
+
+export type UserProfile = { sex?: "M" | "F" };
 
 export type AppointmentKind =
   | "Médecin"
@@ -62,6 +68,7 @@ export type Child = {
   id: string;
   name: string;
   birthDate: string;
+  sex?: "M" | "F";
   notes?: string;
 };
 
