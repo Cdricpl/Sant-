@@ -12,16 +12,6 @@ import { EnfantsTab } from "@/components/sante/EnfantsTab";
 import { VaccinsTab } from "@/components/sante/VaccinsTab";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Santé+ — Votre compagnon santé" },
-      {
-        name: "description",
-        content:
-          "Suivi personnel : poids, IMC, médicaments, analyses de sang, rendez-vous médicaux, vaccins et santé des enfants.",
-      },
-    ],
-  }),
   component: Index,
 });
 
