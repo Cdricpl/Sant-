@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Trash2, Plus, Baby } from "lucide-react";
+import { Trash2, Plus, Baby, Pencil } from "lucide-react";
 import { uid } from "@/lib/utils";
 
 function ageOf(birth: string) {
@@ -26,22 +26,49 @@ function ageOf(birth: string) {
   return `${years} ans`;
 }
 
+type FormMode = "add" | string;
+
 export function EnfantsTab() {
   const [children, setChildren] = useLocalStorage<Child[]>("sante:children", []);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<{ name: string; birthDate: string; sex?: "M" | "F"; notes: string }>({ name: "", birthDate: "", notes: "" });
+  const [formMode, setFormMode] = useState<FormMode | null>(null);
+  const [form, setForm] = useState<{ name: string; birthDate: string; sex?: "M" | "F"; notes: string }>({
+    name: "",
+    birthDate: "",
+    notes: "",
+  });
+
+  function openAdd() {
+    setForm({ name: "", birthDate: "", sex: undefined, notes: "" });
+    setFormMode("add");
+  }
+
+  function openEdit(c: Child) {
+    setForm({ name: c.name, birthDate: c.birthDate ?? "", sex: c.sex, notes: c.notes ?? "" });
+    setFormMode(c.id);
+  }
+
+  function closeForm() {
+    setFormMode(null);
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim()) return;
-    setChildren([...children, { id: uid(), ...form, name: form.name.trim() }]);
-    setForm({ name: "", birthDate: "", sex: undefined, notes: "" });
-    setOpen(false);
+    if (formMode === "add") {
+      setChildren([...children, { id: uid(), ...form, name: form.name.trim() }]);
+    } else {
+      setChildren(children.map((c) =>
+        c.id === formMode ? { ...c, ...form, name: form.name.trim() } : c,
+      ));
+    }
+    setFormMode(null);
   }
 
   function remove(id: string) {
     setChildren(children.filter((c) => c.id !== id));
   }
+
+  const isEditing = formMode !== null;
 
   return (
     <div className="space-y-6">
@@ -52,13 +79,16 @@ export function EnfantsTab() {
             {children.length} enregistré(s)
           </p>
         </div>
-        <Button onClick={() => setOpen((o) => !o)}>
-          <Plus className="mr-1 h-4 w-4" /> Ajouter un enfant
+        <Button onClick={isEditing ? closeForm : openAdd}>
+          {isEditing ? "Annuler" : <><Plus className="mr-1 h-4 w-4" /> Ajouter un enfant</>}
         </Button>
       </div>
 
-      {open && (
+      {isEditing && (
         <Card className="p-5">
+          <p className="mb-3 text-sm font-semibold">
+            {formMode === "add" ? "Nouvel enfant" : "Modifier"}
+          </p>
           <form onSubmit={submit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -109,10 +139,12 @@ export function EnfantsTab() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+              <Button type="button" variant="ghost" onClick={closeForm}>
                 Annuler
               </Button>
-              <Button type="submit">Enregistrer</Button>
+              <Button type="submit">
+                {formMode === "add" ? "Enregistrer" : "Modifier"}
+              </Button>
             </div>
           </form>
         </Card>
@@ -126,7 +158,7 @@ export function EnfantsTab() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {children.map((c) => (
-            <Card key={c.id} className="p-5">
+            <Card key={c.id} className={`p-5 ${formMode === c.id ? "ring-2 ring-primary/30" : ""}`}>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
@@ -156,14 +188,25 @@ export function EnfantsTab() {
                     </p>
                   </div>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => remove(c.id)}
-                  aria-label="Supprimer"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-0.5">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => formMode === c.id ? closeForm() : openEdit(c)}
+                    aria-label="Modifier"
+                    className={formMode === c.id ? "text-primary" : ""}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => remove(c.id)}
+                    aria-label="Supprimer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               {c.notes && (
                 <p className="mt-3 rounded-md bg-secondary/50 p-3 text-sm text-muted-foreground">

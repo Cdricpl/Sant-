@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, Plus, Bell, BellOff, Sparkles } from "lucide-react";
+import { Trash2, Plus, Bell, BellOff, Sparkles, Pencil } from "lucide-react";
 import {
   DEFAULT_MED_TIMES,
   useMedicationReminders,
@@ -46,7 +46,6 @@ function pickMessage(rate: number) {
   else if (rate >= 0.7) pool = MESSAGES.good;
   else if (rate >= 0.4) pool = MESSAGES.okay;
   else pool = MESSAGES.low;
-  // deterministic per day so it doesn't flicker
   const seed = new Date().getDate();
   return pool[seed % pool.length];
 }
@@ -91,34 +90,59 @@ function RegularityRing({ rate }: { rate: number }) {
   );
 }
 
+type FormMode = "add" | string;
+
 export function PilulierTab() {
   const [meds, setMeds] = useLocalStorage<Medication[]>("sante:meds", []);
   const [log, setLog] = useLocalStorage<MedLog>("sante:medlog", {});
   const [times, setTimes] = useLocalStorage<MedTimes>("sante:medtimes", DEFAULT_MED_TIMES);
   const [remindersOn, setRemindersOn] = useLocalStorage<boolean>("sante:reminders", false);
-  const [open, setOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  const [name, setName] = useState("");
-  const [qty, setQty] = useState("");
-  const [pickedTimes, setPickedTimes] = useState<MedFreq[]>([]);
+  const [formMode, setFormMode] = useState<FormMode | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editQty, setEditQty] = useState("");
+  const [editTimes, setEditTimes] = useState<MedFreq[]>([]);
 
   const day = todayKey();
   const { perm, request } = useNotificationPermission();
   useMedicationReminders(meds, log, times, remindersOn && perm === "granted");
 
-  function toggleTime(t: MedFreq) {
-    setPickedTimes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  function openAdd() {
+    setEditName("");
+    setEditQty("");
+    setEditTimes([]);
+    setFormMode("add");
   }
 
-  function add(e: React.FormEvent) {
+  function openEdit(m: Medication) {
+    setEditName(m.name);
+    setEditQty(m.quantity ?? "");
+    setEditTimes([...m.times]);
+    setFormMode(m.id);
+  }
+
+  function closeForm() {
+    setFormMode(null);
+  }
+
+  function toggleEditTime(t: MedFreq) {
+    setEditTimes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  }
+
+  function submitForm(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || pickedTimes.length === 0) return;
-    setMeds([...meds, { id: uid(), name: name.trim(), quantity: qty.trim(), times: pickedTimes }]);
-    setName("");
-    setQty("");
-    setPickedTimes([]);
-    setOpen(false);
+    if (!editName.trim() || editTimes.length === 0) return;
+    if (formMode === "add") {
+      setMeds([...meds, { id: uid(), name: editName.trim(), quantity: editQty.trim(), times: editTimes }]);
+    } else {
+      setMeds(meds.map((m) =>
+        m.id === formMode
+          ? { ...m, name: editName.trim(), quantity: editQty.trim(), times: editTimes }
+          : m,
+      ));
+    }
+    setFormMode(null);
   }
 
   function remove(id: string) {
@@ -130,7 +154,6 @@ export function PilulierTab() {
     setLog({ ...log, [k]: !log[k] });
   }
 
-  // Régularité 7 et 30 jours
   const stats = useMemo(() => {
     const now = new Date();
     function rateOver(days: number) {
@@ -149,7 +172,6 @@ export function PilulierTab() {
       }
       return total === 0 ? 0 : taken / total;
     }
-    // streak (jours consécutifs avec 100%)
     let streak = 0;
     if (meds.length > 0) {
       for (let i = 0; i < 365; i++) {
@@ -190,6 +212,8 @@ export function PilulierTab() {
     });
   }
 
+  const isEditing = formMode !== null;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -203,12 +227,11 @@ export function PilulierTab() {
             })}
           </p>
         </div>
-        <Button onClick={() => setOpen((o) => !o)}>
-          <Plus className="mr-1 h-4 w-4" /> Médicament
+        <Button onClick={isEditing ? closeForm : openAdd}>
+          {isEditing ? "Annuler" : <><Plus className="mr-1 h-4 w-4" /> Médicament</>}
         </Button>
       </div>
 
-      {/* Bandeau régularité + message */}
       {meds.length > 0 && (
         <Card className="p-5">
           <div className="flex items-center gap-5">
@@ -228,7 +251,6 @@ export function PilulierTab() {
         </Card>
       )}
 
-      {/* Rappels */}
       <Card className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -285,16 +307,19 @@ export function PilulierTab() {
         )}
       </Card>
 
-      {open && (
+      {isEditing && (
         <Card className="p-5">
-          <form onSubmit={add} className="space-y-4">
+          <p className="mb-3 text-sm font-semibold">
+            {formMode === "add" ? "Nouveau médicament" : "Modifier le médicament"}
+          </p>
+          <form onSubmit={submitForm} className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="med-name">Nom</Label>
                 <Input
                   id="med-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
                   placeholder="Ex: Doliprane"
                   required
                 />
@@ -303,8 +328,8 @@ export function PilulierTab() {
                 <Label htmlFor="med-qty">Quantité</Label>
                 <Input
                   id="med-qty"
-                  value={qty}
-                  onChange={(e) => setQty(e.target.value)}
+                  value={editQty}
+                  onChange={(e) => setEditQty(e.target.value)}
                   placeholder="Ex: 1 cp / 10 gouttes"
                 />
               </div>
@@ -313,12 +338,12 @@ export function PilulierTab() {
               <Label className="mb-2 block">Fréquence</Label>
               <div className="flex flex-wrap gap-2">
                 {TIMES.map((t) => {
-                  const on = pickedTimes.includes(t);
+                  const on = editTimes.includes(t);
                   return (
                     <button
                       type="button"
                       key={t}
-                      onClick={() => toggleTime(t)}
+                      onClick={() => toggleEditTime(t)}
                       className={`rounded-full border px-4 py-2 text-sm font-medium capitalize transition ${
                         on
                           ? "border-primary bg-primary text-primary-foreground"
@@ -332,8 +357,10 @@ export function PilulierTab() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
-              <Button type="submit">Enregistrer</Button>
+              <Button type="button" variant="ghost" onClick={closeForm}>Annuler</Button>
+              <Button type="submit">
+                {formMode === "add" ? "Enregistrer" : "Modifier"}
+              </Button>
             </div>
           </form>
         </Card>
@@ -347,7 +374,7 @@ export function PilulierTab() {
         </Card>
       ) : (
         <Card className="overflow-hidden">
-          <div className="grid grid-cols-[1fr_repeat(3,56px)_36px] items-center gap-2 border-b bg-secondary/50 px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:grid-cols-[1fr_repeat(3,72px)_44px] sm:px-4">
+          <div className="grid grid-cols-[1fr_repeat(3,44px)_72px] items-center gap-1 border-b bg-secondary/50 px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:grid-cols-[1fr_repeat(3,64px)_80px] sm:px-4">
             <div>Médicament</div>
             <div className="text-center">Matin</div>
             <div className="text-center">Midi</div>
@@ -357,7 +384,9 @@ export function PilulierTab() {
           {meds.map((m) => (
             <div
               key={m.id}
-              className="grid grid-cols-[1fr_repeat(3,56px)_36px] items-center gap-2 border-b px-3 py-3 last:border-b-0 sm:grid-cols-[1fr_repeat(3,72px)_44px] sm:px-4"
+              className={`grid grid-cols-[1fr_repeat(3,44px)_72px] items-center gap-1 border-b px-3 py-3 last:border-b-0 sm:grid-cols-[1fr_repeat(3,64px)_80px] sm:px-4 ${
+                formMode === m.id ? "bg-secondary/30" : ""
+              }`}
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{m.name}</p>
@@ -383,14 +412,25 @@ export function PilulierTab() {
                   </div>
                 );
               })}
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => remove(m.id)}
-                aria-label="Supprimer"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center justify-end gap-0.5">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => formMode === m.id ? closeForm() : openEdit(m)}
+                  aria-label="Modifier"
+                  className={formMode === m.id ? "text-primary" : ""}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => remove(m.id)}
+                  aria-label="Supprimer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))}
         </Card>
