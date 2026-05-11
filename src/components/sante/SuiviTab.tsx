@@ -183,7 +183,7 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
 
 export function SuiviTab() {
   const [children] = useLocalStorage<Child[]>("sante:children", []);
-  const [profile, setProfile] = useLocalStorage<UserProfile>("ui:profile", {});
+  const [profile, setProfile] = useLocalStorage<UserProfile>("ui:profile", { sex: "M" });
   const [selected, setSelected] = useState<string>(() => {
     return window.localStorage.getItem("ui:suivi:selected") ?? "moi";
   });
