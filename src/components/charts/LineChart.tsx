@@ -140,11 +140,15 @@ export function LineChart({
 
 export function Sparkline({
   values,
+  refMin,
+  refMax,
   height = 36,
   width = 100,
   color = "var(--color-primary)",
 }: {
   values: number[];
+  refMin?: number;
+  refMax?: number;
   height?: number;
   width?: number;
   color?: string;
@@ -152,19 +156,36 @@ export function Sparkline({
   if (values.length < 2) {
     return <div style={{ width, height }} className="text-xs text-muted-foreground">—</div>;
   }
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
+  const dataMin = Math.min(...values);
+  const dataMax = Math.max(...values);
+  let scaleMin = Math.min(dataMin, refMin ?? dataMin);
+  let scaleMax = Math.max(dataMax, refMax ?? dataMax);
+  const padY = Math.max((scaleMax - scaleMin) * 0.12, 0.5);
+  scaleMin -= padY;
+  scaleMax += padY;
+  const range = scaleMax - scaleMin;
+  const sy = (v: number) => height - ((v - scaleMin) / range) * height;
   const step = width / (values.length - 1);
   const path = values
-    .map((v, i) => {
-      const x = i * step;
-      const y = height - ((v - min) / range) * height;
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
+    .map((v, i) => `${i === 0 ? "M" : "L"} ${(i * step).toFixed(1)} ${sy(v).toFixed(1)}`)
     .join(" ");
   return (
     <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height}>
+      {refMin !== undefined && refMax !== undefined && (
+        <rect
+          x={0} y={sy(refMax)}
+          width={width} height={sy(refMin) - sy(refMax)}
+          fill="var(--color-accent)" opacity={0.12}
+        />
+      )}
+      {refMax !== undefined && (
+        <line x1={0} x2={width} y1={sy(refMax)} y2={sy(refMax)}
+          stroke="var(--color-accent)" strokeWidth={0.8} strokeDasharray="3 2" opacity={0.7} />
+      )}
+      {refMin !== undefined && (
+        <line x1={0} x2={width} y1={sy(refMin)} y2={sy(refMin)}
+          stroke="var(--color-accent)" strokeWidth={0.8} strokeDasharray="3 2" opacity={0.7} />
+      )}
       <path d={path} fill="none" stroke={color} strokeWidth={1.5} />
     </svg>
   );

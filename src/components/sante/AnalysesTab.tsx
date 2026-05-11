@@ -11,7 +11,7 @@ import { Trash2, Plus, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { uid } from "@/lib/utils";
 
 export function AnalysesTab() {
-  const [profile] = useLocalStorage<UserProfile>("ui:profile", {});
+  const [profile] = useLocalStorage<UserProfile>("ui:profile", { sex: "M" });
   const [items, setItems] = useLocalStorage<Biomarker[]>("sante:bio", []);
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -105,9 +105,20 @@ export function AnalysesTab() {
           else if (b < a * 0.98) trend = "down";
         }
       }
-      return { name, last, history: list, nums, trend };
+      const cat = BIOMARKERS_CATALOG.find((c) => c.name === name);
+      const refMin = cat
+        ? (profile.sex === "M" && cat.refMinM !== undefined ? cat.refMinM
+          : profile.sex === "F" && cat.refMinF !== undefined ? cat.refMinF
+          : cat.refMin)
+        : undefined;
+      const refMax = cat
+        ? (profile.sex === "M" && cat.refMaxM !== undefined ? cat.refMaxM
+          : profile.sex === "F" && cat.refMaxF !== undefined ? cat.refMaxF
+          : cat.refMax)
+        : undefined;
+      return { name, last, history: list, nums, trend, refMin, refMax };
     });
-  }, [byName]);
+  }, [byName, profile.sex]);
 
   return (
     <div className="space-y-6">
@@ -210,13 +221,19 @@ export function AnalysesTab() {
         </Card>
       ) : (
         <div className="grid gap-3">
-          {summaries.map(({ name, last, history, nums, trend }) => {
+          {summaries.map(({ name, last, history, nums, trend, refMin, refMax }) => {
             const flagColor =
               last.flag === "high"
                 ? "text-destructive"
                 : last.flag === "low"
                   ? "text-warning"
                   : "text-accent";
+            const lineColor =
+              last.flag === "high"
+                ? "var(--color-destructive)"
+                : last.flag === "low"
+                  ? "var(--color-warning)"
+                  : "var(--color-accent)";
             const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
             return (
               <Card key={name} className="p-4">
@@ -227,7 +244,7 @@ export function AnalysesTab() {
                       {last.unit && `${last.unit} • `}réf {last.refRange}
                     </p>
                   </div>
-                  <Sparkline values={nums} />
+                  <Sparkline values={nums} refMin={refMin} refMax={refMax} color={lineColor} />
                   <div className="text-right">
                     <p className={`text-lg font-bold ${flagColor}`}>{last.value}</p>
                     <div className="flex items-center justify-end gap-1 text-[11px] text-muted-foreground">
