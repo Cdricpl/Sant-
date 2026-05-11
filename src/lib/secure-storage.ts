@@ -18,6 +18,17 @@ type PinMeta = {
 let aesKey: CryptoKey | null = null;
 const plaintextCache = new Map<string, string>(); // key -> JSON string
 const listeners = new Set<() => void>();
+const pendingWrites = new Set<Promise<void>>();
+
+// Avertir l'utilisateur si des écritures chiffrées sont en cours à la fermeture
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", (e) => {
+    if (pendingWrites.size > 0) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+}
 
 function b64encode(bytes: Uint8Array): string {
   let s = "";
@@ -206,13 +217,13 @@ export function getCached(key: string): string | null {
 export function setCachedAndPersist(key: string, value: string): void {
   plaintextCache.set(key, value);
   if (!aesKey) return;
-  void encryptString(value).then((enc) => {
-    try {
+  const p: Promise<void> = encryptString(value)
+    .then((enc) => {
       window.localStorage.setItem(key, enc);
-    } catch {
-      /* ignore */
-    }
-  });
+    })
+    .catch(() => {/* ignore quota errors */})
+    .finally(() => pendingWrites.delete(p));
+  pendingWrites.add(p);
 }
 
 export function subscribe(fn: () => void): () => void {
