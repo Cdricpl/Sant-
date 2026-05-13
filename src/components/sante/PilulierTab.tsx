@@ -90,8 +90,6 @@ function RegularityRing({ rate }: { rate: number }) {
   );
 }
 
-type FormMode = "add" | string;
-
 export function PilulierTab() {
   const [meds, setMeds] = useLocalStorage<Medication[]>("sante:meds", []);
   const [log, setLog] = useLocalStorage<MedLog>("sante:medlog", {});
@@ -99,7 +97,7 @@ export function PilulierTab() {
   const [remindersOn, setRemindersOn] = useLocalStorage<boolean>("sante:reminders", false);
   const [showSettings, setShowSettings] = useState(false);
 
-  const [formMode, setFormMode] = useState<FormMode | null>(null);
+  const [formMode, setFormMode] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editQty, setEditQty] = useState("");
   const [editTimes, setEditTimes] = useState<MedFreq[]>([]);

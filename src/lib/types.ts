@@ -1,4 +1,4 @@
-export type WeightEntry = { id: string; date: string; weight: number; height: number; notes?: string };
+export type WeightEntry = { id: string; date: string; weight: number; height: number };
 
 export type MedFreq = "matin" | "midi" | "soir";
 export type Medication = {
@@ -6,8 +6,6 @@ export type Medication = {
   name: string;
   quantity: string;
   times: MedFreq[];
-  startDate?: string;
-  endDate?: string;
 };
 // keyed by `${date}|${medId}|${time}` -> true
 export type MedLog = Record<string, boolean>;
@@ -60,8 +58,6 @@ export type Appointment = {
   date: string;
   practitioner?: string;
   notes?: string;
-  isCompleted?: boolean;
-  outcome?: string;
 };
 
 export type Child = {
@@ -79,6 +75,4 @@ export type Vaccine = {
   date: string;
   nextDate?: string;
   notes?: string;
-  batch?: string;
-  manufacturer?: string;
 };

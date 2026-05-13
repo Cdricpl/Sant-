@@ -26,11 +26,9 @@ function ageOf(birth: string) {
   return `${years} ans`;
 }
 
-type FormMode = "add" | string;
-
 export function EnfantsTab() {
   const [children, setChildren] = useLocalStorage<Child[]>("sante:children", []);
-  const [formMode, setFormMode] = useState<FormMode | null>(null);
+  const [formMode, setFormMode] = useState<string | null>(null);
   const [form, setForm] = useState<{ name: string; birthDate: string; sex?: "M" | "F"; notes: string }>({
     name: "",
     birthDate: "",
