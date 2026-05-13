@@ -7,9 +7,18 @@ declare const self: ServiceWorkerGlobalScope & typeof globalThis;
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
-// Activation immédiate sans attendre la fermeture des onglets
+// Activation immédiate + rechargement de tous les onglets ouverts
+// (évite la page blanche causée par des assets manquants après mise à jour)
 self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener("activate", (e) =>
+  e.waitUntil(
+    self.clients.claim().then(() =>
+      self.clients
+        .matchAll({ type: "window", includeUncontrolled: true })
+        .then((clients) => Promise.all(clients.map((c) => c.navigate(c.url))))
+    )
+  )
+);
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
