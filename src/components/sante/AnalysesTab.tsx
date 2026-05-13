@@ -239,8 +239,8 @@ export function AnalysesTab() {
               <Card key={name} className="p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{name}</p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="line-clamp-2 text-sm font-semibold leading-snug">{name}</p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
                       {last.unit && `${last.unit} • `}réf {last.refRange}
                     </p>
                   </div>
