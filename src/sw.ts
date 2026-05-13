@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+// v2026-05-13
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 
 declare const self: ServiceWorkerGlobalScope & typeof globalThis;
