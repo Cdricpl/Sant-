@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Home, Activity, Pill, FlaskConical, CalendarDays, Baby, Syringe, Lock } from "lucide-react";
+import {
+  Home,
+  Activity,
+  Pill,
+  FlaskConical,
+  CalendarDays,
+  Baby,
+  Syringe,
+  Lock,
+} from "lucide-react";
 import { LockScreen, useSecureGate } from "@/components/sante/LockScreen";
 import { lock as lockApp } from "@/lib/secure-storage";
 import { AccueilTab } from "@/components/sante/AccueilTab";

@@ -67,9 +67,11 @@ export async function registerPeriodicSync(): Promise<void> {
   if (!("serviceWorker" in navigator)) return;
   const reg = await navigator.serviceWorker.ready;
   if (!("periodicSync" in reg)) return;
-  await (reg as ServiceWorkerRegistration & {
-    periodicSync: { register: (tag: string, opts: { minInterval: number }) => Promise<void> };
-  }).periodicSync.register("medication-reminder", {
+  await (
+    reg as ServiceWorkerRegistration & {
+      periodicSync: { register: (tag: string, opts: { minInterval: number }) => Promise<void> };
+    }
+  ).periodicSync.register("medication-reminder", {
     minInterval: 12 * 60 * 60 * 1000,
   });
 }
@@ -78,7 +80,9 @@ export async function unregisterPeriodicSync(): Promise<void> {
   if (!("serviceWorker" in navigator)) return;
   const reg = await navigator.serviceWorker.ready;
   if (!("periodicSync" in reg)) return;
-  await (reg as ServiceWorkerRegistration & {
-    periodicSync: { unregister: (tag: string) => Promise<void> };
-  }).periodicSync.unregister("medication-reminder");
+  await (
+    reg as ServiceWorkerRegistration & {
+      periodicSync: { unregister: (tag: string) => Promise<void> };
+    }
+  ).periodicSync.unregister("medication-reminder");
 }

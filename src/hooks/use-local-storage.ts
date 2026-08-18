@@ -55,8 +55,7 @@ export function useLocalStorage<T>(key: string, initial: T) {
 
   const setValue: typeof setValueState = (next) => {
     setValueState((prev) => {
-      const resolved =
-        typeof next === "function" ? (next as (p: T) => T)(prev) : next;
+      const resolved = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
       try {
         const serialized = JSON.stringify(resolved);
         if (protectedKey) {

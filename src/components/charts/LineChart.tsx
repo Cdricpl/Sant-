@@ -2,6 +2,8 @@ import { useMemo } from "react";
 
 type Point = { x: number; y: number; label?: string };
 
+const padding = { top: 12, right: 12, bottom: 24, left: 36 };
+
 export function LineChart({
   points,
   height = 160,
@@ -19,8 +21,6 @@ export function LineChart({
   className?: string;
   color?: string;
 }) {
-  const padding = { top: 12, right: 12, bottom: 24, left: 36 };
-
   const { path, dots, yTicks, xTicks, scaleX, scaleY } = useMemo(() => {
     if (points.length === 0) {
       return { path: "", dots: [], yTicks: [], xTicks: [], scaleX: () => 0, scaleY: () => 0 };
@@ -154,7 +154,11 @@ export function Sparkline({
   color?: string;
 }) {
   if (values.length < 2) {
-    return <div style={{ width, height }} className="text-xs text-muted-foreground">—</div>;
+    return (
+      <div style={{ width, height }} className="text-xs text-muted-foreground">
+        —
+      </div>
+    );
   }
   const dataMin = Math.min(...values);
   const dataMax = Math.max(...values);
@@ -173,18 +177,37 @@ export function Sparkline({
     <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height}>
       {refMin !== undefined && refMax !== undefined && (
         <rect
-          x={0} y={sy(refMax)}
-          width={width} height={sy(refMin) - sy(refMax)}
-          fill="var(--color-accent)" opacity={0.12}
+          x={0}
+          y={sy(refMax)}
+          width={width}
+          height={sy(refMin) - sy(refMax)}
+          fill="var(--color-accent)"
+          opacity={0.12}
         />
       )}
       {refMax !== undefined && (
-        <line x1={0} x2={width} y1={sy(refMax)} y2={sy(refMax)}
-          stroke="var(--color-accent)" strokeWidth={0.8} strokeDasharray="3 2" opacity={0.7} />
+        <line
+          x1={0}
+          x2={width}
+          y1={sy(refMax)}
+          y2={sy(refMax)}
+          stroke="var(--color-accent)"
+          strokeWidth={0.8}
+          strokeDasharray="3 2"
+          opacity={0.7}
+        />
       )}
       {refMin !== undefined && (
-        <line x1={0} x2={width} y1={sy(refMin)} y2={sy(refMin)}
-          stroke="var(--color-accent)" strokeWidth={0.8} strokeDasharray="3 2" opacity={0.7} />
+        <line
+          x1={0}
+          x2={width}
+          y1={sy(refMin)}
+          y2={sy(refMin)}
+          stroke="var(--color-accent)"
+          strokeWidth={0.8}
+          strokeDasharray="3 2"
+          opacity={0.7}
+        />
       )}
       <path d={path} fill="none" stroke={color} strokeWidth={1.5} />
     </svg>

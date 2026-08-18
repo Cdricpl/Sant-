@@ -97,7 +97,7 @@ export function VaccinsTab() {
       items
         .map((v) => ({ v, days: daysUntil(v.nextDate) }))
         .filter((x) => x.days !== null && x.days! >= 0 && x.days! <= 60)
-        .sort((a, b) => (a.days! - b.days!)),
+        .sort((a, b) => a.days! - b.days!),
     [items],
   );
 
@@ -145,7 +145,9 @@ export function VaccinsTab() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3"
                 >
                   {whoOptions.map((w) => (
-                    <option key={w} value={w}>{w}</option>
+                    <option key={w} value={w}>
+                      {w}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -161,7 +163,9 @@ export function VaccinsTab() {
                   {(Object.keys(CATEGORY_LABELS) as (keyof typeof CATEGORY_LABELS)[]).map((cat) => (
                     <optgroup key={cat} label={CATEGORY_LABELS[cat]}>
                       {VACCINES_BY_CATEGORY[cat].map((v) => (
-                        <option key={v.key} value={v.key}>{v.name}</option>
+                        <option key={v.key} value={v.key}>
+                          {v.name}
+                        </option>
                       ))}
                     </optgroup>
                   ))}
@@ -213,7 +217,9 @@ export function VaccinsTab() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+                Annuler
+              </Button>
               <Button type="submit">Enregistrer</Button>
             </div>
           </form>
@@ -231,7 +237,9 @@ export function VaccinsTab() {
           const palette = colorForPerson(person, whoOptions);
           return (
             <div key={person} className="space-y-3">
-              <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${palette.badge}`}>
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${palette.badge}`}
+              >
                 <span className={`h-2 w-2 rounded-full ${palette.dot}`} />
                 {person}
               </span>
@@ -249,16 +257,21 @@ export function VaccinsTab() {
                           Fait le {new Date(v.date).toLocaleDateString("fr-FR")}
                         </p>
                         {v.nextDate && (
-                          <p className={`mt-1 text-xs ${days !== null && days <= 60 ? "text-warning" : "text-muted-foreground"}`}>
+                          <p
+                            className={`mt-1 text-xs ${days !== null && days <= 60 ? "text-warning" : "text-muted-foreground"}`}
+                          >
                             Prochain rappel : {new Date(v.nextDate).toLocaleDateString("fr-FR")}
                             {days !== null && days >= 0 && ` (dans ${days} j)`}
                           </p>
                         )}
-                        {v.notes && (
-                          <p className="mt-1 text-xs text-muted-foreground">{v.notes}</p>
-                        )}
+                        {v.notes && <p className="mt-1 text-xs text-muted-foreground">{v.notes}</p>}
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => remove(v.id)} aria-label="Supprimer">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => remove(v.id)}
+                        aria-label="Supprimer"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

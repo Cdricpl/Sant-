@@ -132,13 +132,18 @@ export function PilulierTab() {
     e.preventDefault();
     if (!editName.trim() || editTimes.length === 0) return;
     if (formMode === "add") {
-      setMeds([...meds, { id: uid(), name: editName.trim(), quantity: editQty.trim(), times: editTimes }]);
+      setMeds([
+        ...meds,
+        { id: uid(), name: editName.trim(), quantity: editQty.trim(), times: editTimes },
+      ]);
     } else {
-      setMeds(meds.map((m) =>
-        m.id === formMode
-          ? { ...m, name: editName.trim(), quantity: editQty.trim(), times: editTimes }
-          : m,
-      ));
+      setMeds(
+        meds.map((m) =>
+          m.id === formMode
+            ? { ...m, name: editName.trim(), quantity: editQty.trim(), times: editTimes }
+            : m,
+        ),
+      );
     }
     setFormMode(null);
   }
@@ -226,7 +231,13 @@ export function PilulierTab() {
           </p>
         </div>
         <Button onClick={isEditing ? closeForm : openAdd}>
-          {isEditing ? "Annuler" : <><Plus className="mr-1 h-4 w-4" /> Médicament</>}
+          {isEditing ? (
+            "Annuler"
+          ) : (
+            <>
+              <Plus className="mr-1 h-4 w-4" /> Médicament
+            </>
+          )}
         </Button>
       </div>
 
@@ -241,8 +252,13 @@ export function PilulierTab() {
               </div>
               <p className="mt-1 text-sm text-muted-foreground">{message}</p>
               <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <span>30 j : <strong className="text-foreground">{Math.round(stats.month * 100)}%</strong></span>
-                <span>Série : <strong className="text-foreground">{stats.streak} j</strong></span>
+                <span>
+                  30 j :{" "}
+                  <strong className="text-foreground">{Math.round(stats.month * 100)}%</strong>
+                </span>
+                <span>
+                  Série : <strong className="text-foreground">{stats.streak} j</strong>
+                </span>
               </div>
             </div>
           </div>
@@ -277,7 +293,14 @@ export function PilulierTab() {
                 <Button variant="ghost" size="sm" onClick={testNotification}>
                   Tester
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => { setRemindersOn(false); unregisterPeriodicSync().catch(() => {}); }}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setRemindersOn(false);
+                    unregisterPeriodicSync().catch(() => {});
+                  }}
+                >
                   Désactiver
                 </Button>
               </>
@@ -292,7 +315,9 @@ export function PilulierTab() {
           <div className="mt-4 grid grid-cols-3 gap-3">
             {TIMES.map((t) => (
               <div key={t}>
-                <Label htmlFor={`time-${t}`} className="capitalize">{t}</Label>
+                <Label htmlFor={`time-${t}`} className="capitalize">
+                  {t}
+                </Label>
                 <Input
                   id={`time-${t}`}
                   type="time"
@@ -355,10 +380,10 @@ export function PilulierTab() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={closeForm}>Annuler</Button>
-              <Button type="submit">
-                {formMode === "add" ? "Enregistrer" : "Modifier"}
+              <Button type="button" variant="ghost" onClick={closeForm}>
+                Annuler
               </Button>
+              <Button type="submit">{formMode === "add" ? "Enregistrer" : "Modifier"}</Button>
             </div>
           </form>
         </Card>
@@ -388,9 +413,7 @@ export function PilulierTab() {
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{m.name}</p>
-                {m.quantity && (
-                  <p className="text-xs text-muted-foreground">{m.quantity}</p>
-                )}
+                {m.quantity && <p className="text-xs text-muted-foreground">{m.quantity}</p>}
               </div>
               {TIMES.map((t) => {
                 const required = m.times.includes(t);
@@ -414,7 +437,7 @@ export function PilulierTab() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={() => formMode === m.id ? closeForm() : openEdit(m)}
+                  onClick={() => (formMode === m.id ? closeForm() : openEdit(m))}
                   aria-label="Modifier"
                   className={formMode === m.id ? "text-primary" : ""}
                 >
