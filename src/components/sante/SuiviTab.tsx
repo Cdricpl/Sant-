@@ -69,10 +69,7 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
     const w = parseFloat(weight);
     const h = parseFloat(height || String(lastHeight));
     if (!w || !h) return;
-    setEntries([
-      { id: uid(), date: todayKey(), weight: w, height: h },
-      ...entries,
-    ]);
+    setEntries([{ id: uid(), date: todayKey(), weight: w, height: h }, ...entries]);
     setWeight("");
     setHeight("");
   }
@@ -125,7 +122,9 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
             />
           </div>
           <div className="flex items-end">
-            <Button type="submit" className="w-full">Ajouter</Button>
+            <Button type="submit" className="w-full">
+              Ajouter
+            </Button>
           </div>
         </form>
       </Card>
@@ -134,7 +133,8 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
         <h3 className="mb-2 text-lg font-semibold">Évolution IMC</h3>
         {!isAdult && points.length > 0 && (
           <p className="mb-2 text-xs text-muted-foreground">
-            Pour les enfants, l'IMC s'interprète sur une courbe pédiatrique — à voir avec le médecin.
+            Pour les enfants, l'IMC s'interprète sur une courbe pédiatrique — à voir avec le
+            médecin.
           </p>
         )}
         <LineChart points={points} refBands={refBands} yLabel="IMC" height={180} />
@@ -164,11 +164,14 @@ function PersonSuivi({ personId, isAdult }: { personId: string; isAdult: boolean
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">IMC {v.toFixed(1)}</p>
-                    {isAdult && (
-                      <p className={`text-xs font-medium ${lab.tone}`}>{lab.label}</p>
-                    )}
+                    {isAdult && <p className={`text-xs font-medium ${lab.tone}`}>{lab.label}</p>}
                   </div>
-                  <Button size="icon" variant="ghost" onClick={() => remove(e.id)} aria-label="Supprimer">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => remove(e.id)}
+                    aria-label="Supprimer"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -194,7 +197,10 @@ export function SuiviTab() {
   }
 
   const persons = useMemo(
-    () => [{ id: "moi", name: "Moi", isAdult: true }, ...children.map((c) => ({ id: c.id, name: c.name, isAdult: false }))],
+    () => [
+      { id: "moi", name: "Moi", isAdult: true },
+      ...children.map((c) => ({ id: c.id, name: c.name, isAdult: false })),
+    ],
     [children],
   );
 

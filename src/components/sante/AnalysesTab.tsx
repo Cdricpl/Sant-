@@ -18,7 +18,13 @@ export function AnalysesTab() {
   const [values, setValues] = useState<Record<string, string>>({});
 
   const [showCustom, setShowCustom] = useState(false);
-  const [custom, setCustom] = useState({ name: "", value: "", unit: "", refRange: "", category: "Autre" });
+  const [custom, setCustom] = useState({
+    name: "",
+    value: "",
+    unit: "",
+    refRange: "",
+    category: "Autre",
+  });
 
   function saveDay(e: React.FormEvent) {
     e.preventDefault();
@@ -107,14 +113,18 @@ export function AnalysesTab() {
       }
       const cat = BIOMARKERS_CATALOG.find((c) => c.name === name);
       const refMin = cat
-        ? (profile.sex === "M" && cat.refMinM !== undefined ? cat.refMinM
-          : profile.sex === "F" && cat.refMinF !== undefined ? cat.refMinF
-          : cat.refMin)
+        ? profile.sex === "M" && cat.refMinM !== undefined
+          ? cat.refMinM
+          : profile.sex === "F" && cat.refMinF !== undefined
+            ? cat.refMinF
+            : cat.refMin
         : undefined;
       const refMax = cat
-        ? (profile.sex === "M" && cat.refMaxM !== undefined ? cat.refMaxM
-          : profile.sex === "F" && cat.refMaxF !== undefined ? cat.refMaxF
-          : cat.refMax)
+        ? profile.sex === "M" && cat.refMaxM !== undefined
+          ? cat.refMaxM
+          : profile.sex === "F" && cat.refMaxF !== undefined
+            ? cat.refMaxF
+            : cat.refMax
         : undefined;
       return { name, last, history: list, nums, trend, refMin, refMax };
     });
@@ -171,7 +181,9 @@ export function AnalysesTab() {
               </div>
             ))}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+                Annuler
+              </Button>
               <Button type="submit">Enregistrer</Button>
             </div>
           </form>
@@ -189,26 +201,45 @@ export function AnalysesTab() {
           <form onSubmit={addCustom} className="grid gap-3 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <Label>Nom</Label>
-              <Input value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} required />
+              <Input
+                value={custom.name}
+                onChange={(e) => setCustom({ ...custom, name: e.target.value })}
+                required
+              />
             </div>
             <div>
               <Label>Résultat</Label>
-              <Input value={custom.value} onChange={(e) => setCustom({ ...custom, value: e.target.value })} required />
+              <Input
+                value={custom.value}
+                onChange={(e) => setCustom({ ...custom, value: e.target.value })}
+                required
+              />
             </div>
             <div>
               <Label>Unité</Label>
-              <Input value={custom.unit} onChange={(e) => setCustom({ ...custom, unit: e.target.value })} />
+              <Input
+                value={custom.unit}
+                onChange={(e) => setCustom({ ...custom, unit: e.target.value })}
+              />
             </div>
             <div>
               <Label>Réf.</Label>
-              <Input value={custom.refRange} onChange={(e) => setCustom({ ...custom, refRange: e.target.value })} />
+              <Input
+                value={custom.refRange}
+                onChange={(e) => setCustom({ ...custom, refRange: e.target.value })}
+              />
             </div>
             <div>
               <Label>Catégorie</Label>
-              <Input value={custom.category} onChange={(e) => setCustom({ ...custom, category: e.target.value })} />
+              <Input
+                value={custom.category}
+                onChange={(e) => setCustom({ ...custom, category: e.target.value })}
+              />
             </div>
             <div className="sm:col-span-2 flex justify-end gap-2">
-              <Button type="button" variant="ghost" onClick={() => setShowCustom(false)}>Annuler</Button>
+              <Button type="button" variant="ghost" onClick={() => setShowCustom(false)}>
+                Annuler
+              </Button>
               <Button type="submit">Ajouter</Button>
             </div>
           </form>
@@ -267,7 +298,12 @@ export function AnalysesTab() {
                           <span className="font-medium">
                             {h.value} {h.unit}
                           </span>
-                          <Button size="icon" variant="ghost" onClick={() => remove(h.id)} aria-label="Supprimer">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => remove(h.id)}
+                            aria-label="Supprimer"
+                          >
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>

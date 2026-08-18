@@ -1,6 +1,14 @@
 import { useRef, useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { Appointment, Biomarker, Medication, MedLog, Vaccine, WeightEntry, Child } from "@/lib/types";
+import type {
+  Appointment,
+  Biomarker,
+  Medication,
+  MedLog,
+  Vaccine,
+  WeightEntry,
+  Child,
+} from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Activity, Pill, CalendarDays, Baby, FlaskConical, Download, Upload } from "lucide-react";
@@ -24,9 +32,7 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
 
   const last = weights[0];
   const bmi =
-    last && last.height > 0
-      ? (last.weight / Math.pow(last.height / 100, 2)).toFixed(1)
-      : "—";
+    last && last.height > 0 ? (last.weight / Math.pow(last.height / 100, 2)).toFixed(1) : "—";
 
   const day = todayKey();
   const todayDoses = meds.flatMap((m) => m.times.map((t) => ({ medId: m.id, t })));
@@ -54,9 +60,7 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
     {
       label: "Dernier RDV",
       value: lastRdv ? lastRdv.kind : "—",
-      sub: lastRdv
-        ? new Date(lastRdv.date).toLocaleDateString("fr-FR")
-        : "Aucun rendez-vous",
+      sub: lastRdv ? new Date(lastRdv.date).toLocaleDateString("fr-FR") : "Aucun rendez-vous",
       icon: CalendarDays,
       tab: "rdv",
       tone: "bg-warning-soft text-warning",
@@ -97,7 +101,9 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
         setPendingImport(data);
         setImportPreview(preview);
         setImportStatus("confirm");
-      } catch { /* fichier invalide */ }
+      } catch {
+        /* fichier invalide */
+      }
       e.target.value = "";
     };
     reader.readAsText(file);
@@ -105,11 +111,15 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
 
   function confirmImport() {
     if (!pendingImport) return;
-    if (Array.isArray(pendingImport.medications)) setMeds(pendingImport.medications as Medication[]);
-    if (pendingImport.medLog && typeof pendingImport.medLog === "object") setLog(pendingImport.medLog as MedLog);
+    if (Array.isArray(pendingImport.medications))
+      setMeds(pendingImport.medications as Medication[]);
+    if (pendingImport.medLog && typeof pendingImport.medLog === "object")
+      setLog(pendingImport.medLog as MedLog);
     if (Array.isArray(pendingImport.weights)) setWeightsMoi(pendingImport.weights as WeightEntry[]);
-    if (Array.isArray(pendingImport.biomarkers)) setBiomarkers(pendingImport.biomarkers as Biomarker[]);
-    if (Array.isArray(pendingImport.appointments)) setRdv(pendingImport.appointments as Appointment[]);
+    if (Array.isArray(pendingImport.biomarkers))
+      setBiomarkers(pendingImport.biomarkers as Biomarker[]);
+    if (Array.isArray(pendingImport.appointments))
+      setRdv(pendingImport.appointments as Appointment[]);
     if (Array.isArray(pendingImport.vaccines)) setVaccines(pendingImport.vaccines as Vaccine[]);
     if (Array.isArray(pendingImport.children)) setChildren(pendingImport.children as Child[]);
     setPendingImport(null);
@@ -147,7 +157,13 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImportFile} />
+          <input
+            ref={importRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            onChange={handleImportFile}
+          />
           <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
             <Upload className="mr-1 h-4 w-4" /> Importer
           </Button>
@@ -162,13 +178,28 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
           <p className="mb-2 text-sm font-semibold">Confirmer l'import ?</p>
           <ul className="mb-3 space-y-0.5 text-xs">
             {Object.entries(importPreview).map(([k, v]) => (
-              <li key={k}>{k} : <strong>{v}</strong> entrée(s)</li>
+              <li key={k}>
+                {k} : <strong>{v}</strong> entrée(s)
+              </li>
             ))}
           </ul>
-          <p className="mb-3 text-xs text-muted-foreground">Les données actuelles seront remplacées.</p>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Les données actuelles seront remplacées.
+          </p>
           <div className="flex gap-2">
-            <Button size="sm" onClick={confirmImport}>Confirmer</Button>
-            <Button size="sm" variant="ghost" onClick={() => { setImportStatus("idle"); setPendingImport(null); }}>Annuler</Button>
+            <Button size="sm" onClick={confirmImport}>
+              Confirmer
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setImportStatus("idle");
+                setPendingImport(null);
+              }}
+            >
+              Annuler
+            </Button>
           </div>
         </Card>
       )}
@@ -183,14 +214,12 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
         {cards.map((c) => {
           const Icon = c.icon;
           return (
-            <button
-              key={c.label}
-              onClick={() => onGo(c.tab)}
-              className="text-left"
-            >
+            <button key={c.label} onClick={() => onGo(c.tab)} className="text-left">
               <Card className="p-4 transition hover:shadow-md">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${c.tone}`}>
+                  <div
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${c.tone}`}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -206,7 +235,6 @@ export function AccueilTab({ onGo }: { onGo: (tab: string) => void }) {
           );
         })}
       </div>
-
     </div>
   );
 }

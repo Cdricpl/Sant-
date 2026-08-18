@@ -226,7 +226,9 @@ export function setCachedAndPersist(key: string, value: string): void {
     .then((enc) => {
       window.localStorage.setItem(key, enc);
     })
-    .catch(() => {/* ignore quota errors */})
+    .catch(() => {
+      /* ignore quota errors */
+    })
     .finally(() => pendingWrites.delete(p));
   pendingWrites.add(p);
 }

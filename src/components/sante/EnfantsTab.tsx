@@ -29,7 +29,12 @@ function ageOf(birth: string) {
 export function EnfantsTab() {
   const [children, setChildren] = useLocalStorage<Child[]>("sante:children", []);
   const [formMode, setFormMode] = useState<string | null>(null);
-  const [form, setForm] = useState<{ name: string; birthDate: string; sex?: "M" | "F"; notes: string }>({
+  const [form, setForm] = useState<{
+    name: string;
+    birthDate: string;
+    sex?: "M" | "F";
+    notes: string;
+  }>({
     name: "",
     birthDate: "",
     notes: "",
@@ -55,9 +60,9 @@ export function EnfantsTab() {
     if (formMode === "add") {
       setChildren([...children, { id: uid(), ...form, name: form.name.trim() }]);
     } else {
-      setChildren(children.map((c) =>
-        c.id === formMode ? { ...c, ...form, name: form.name.trim() } : c,
-      ));
+      setChildren(
+        children.map((c) => (c.id === formMode ? { ...c, ...form, name: form.name.trim() } : c)),
+      );
     }
     setFormMode(null);
   }
@@ -73,12 +78,16 @@ export function EnfantsTab() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Mes enfants</h3>
-          <p className="text-sm text-muted-foreground">
-            {children.length} enregistré(s)
-          </p>
+          <p className="text-sm text-muted-foreground">{children.length} enregistré(s)</p>
         </div>
         <Button onClick={isEditing ? closeForm : openAdd}>
-          {isEditing ? "Annuler" : <><Plus className="mr-1 h-4 w-4" /> Ajouter un enfant</>}
+          {isEditing ? (
+            "Annuler"
+          ) : (
+            <>
+              <Plus className="mr-1 h-4 w-4" /> Ajouter un enfant
+            </>
+          )}
         </Button>
       </div>
 
@@ -140,9 +149,7 @@ export function EnfantsTab() {
               <Button type="button" variant="ghost" onClick={closeForm}>
                 Annuler
               </Button>
-              <Button type="submit">
-                {formMode === "add" ? "Enregistrer" : "Modifier"}
-              </Button>
+              <Button type="submit">{formMode === "add" ? "Enregistrer" : "Modifier"}</Button>
             </div>
           </form>
         </Card>
@@ -159,22 +166,26 @@ export function EnfantsTab() {
             <Card key={c.id} className={`p-5 ${formMode === c.id ? "ring-2 ring-primary/30" : ""}`}>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                    c.sex === "M"
-                      ? "bg-sky-100 text-sky-700"
-                      : c.sex === "F"
-                        ? "bg-pink-100 text-pink-600"
-                        : "bg-accent-soft text-accent"
-                  }`}>
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      c.sex === "M"
+                        ? "bg-sky-100 text-sky-700"
+                        : c.sex === "F"
+                          ? "bg-pink-100 text-pink-600"
+                          : "bg-accent-soft text-accent"
+                    }`}
+                  >
                     <Baby className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="font-semibold">
                       {c.name}
                       {c.sex && (
-                        <span className={`ml-2 text-xs font-medium ${
-                          c.sex === "M" ? "text-sky-600" : "text-pink-500"
-                        }`}>
+                        <span
+                          className={`ml-2 text-xs font-medium ${
+                            c.sex === "M" ? "text-sky-600" : "text-pink-500"
+                          }`}
+                        >
                           {c.sex === "M" ? "Garçon" : "Fille"}
                         </span>
                       )}
@@ -190,7 +201,7 @@ export function EnfantsTab() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    onClick={() => formMode === c.id ? closeForm() : openEdit(c)}
+                    onClick={() => (formMode === c.id ? closeForm() : openEdit(c))}
                     aria-label="Modifier"
                     className={formMode === c.id ? "text-primary" : ""}
                   >

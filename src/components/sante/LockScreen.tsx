@@ -84,7 +84,9 @@ export function LockScreen({ pinExists }: { pinExists: boolean }) {
   }
 
   async function onReset() {
-    if (window.confirm("Effacer toutes les données et le code PIN ? Cette action est irréversible.")) {
+    if (
+      window.confirm("Effacer toutes les données et le code PIN ? Cette action est irréversible.")
+    ) {
       await resetAll();
       setPin("");
       setConfirm("");
