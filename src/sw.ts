@@ -1,8 +1,24 @@
 /// <reference lib="webworker" />
 // v2026-05-13
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
+import { NavigationRoute, registerRoute } from "workbox-routing";
+import { NetworkFirst } from "workbox-strategies";
 
 declare const self: ServiceWorkerGlobalScope & typeof globalThis;
+
+// Les navigations passent par le réseau EN PREMIER (repli sur le cache hors ligne).
+// Indispensable : servir un index.html périmé depuis le cache le ferait pointer vers
+// des fichiers JS/CSS supprimés du serveur au déploiement suivant → page blanche
+// définitive. Doit être enregistré AVANT precacheAndRoute (première route qui
+// correspond = route retenue).
+registerRoute(
+  new NavigationRoute(
+    new NetworkFirst({
+      cacheName: "html",
+      networkTimeoutSeconds: 5,
+    }),
+  ),
+);
 
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
